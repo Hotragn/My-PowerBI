@@ -1,0 +1,21 @@
+Model,Provider,ReleaseDate,CostPerMillionTokens,BenchmarkScore
+GPT-3.5 Turbo,OpenAI,2023-03-01,1.50,58
+Claude 2,Anthropic,2023-07-11,11.02,62
+GPT-4,OpenAI,2023-03-14,45.00,75
+Llama 2 70B,Meta,2023-07-18,0.90,55
+Mistral Large,Mistral AI,2024-02-26,8.00,68
+Claude 3 Sonnet,Anthropic,2024-03-04,6.00,72
+Claude 3 Opus,Anthropic,2024-03-04,30.00,80
+Gemini 1.5 Pro,Google,2024-05-14,7.00,77
+GPT-4o,OpenAI,2024-05-13,7.50,79
+Llama 3 70B,Meta,2024-04-18,1.20,73
+DeepSeek V2,DeepSeek,2024-05-06,0.28,74
+Claude 3.5 Sonnet,Anthropic,2024-06-20,6.00,84
+GPT-4o mini,OpenAI,2024-07-18,0.30,68
+Grok 2,xAI,2024-08-13,10.00,76
+Llama 3.1 405B,Meta,2024-07-23,3.50,82
+DeepSeek V3,DeepSeek,2024-12-26,0.55,86
+Gemini 2.0 Flash,Google,2024-12-11,0.20,80
+o3-mini,OpenAI,2025-01-31,1.75,85
+Claude 3.7 Sonnet,Anthropic,2025-02-24,6.00,88
+Llama 4 Maverick,Meta,2025-04-05,0.40,84

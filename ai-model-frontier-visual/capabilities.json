@@ -1,0 +1,136 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Model",
+            "name": "model",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Cost",
+            "name": "cost",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Capability score",
+            "name": "score",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Release date",
+            "name": "releaseDate",
+            "kind": "Measure"
+        }
+    ],
+    "objects": {
+        "dataPoint": {
+            "properties": {
+                "onFrontierColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "dominatedColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "pointRadius": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "showLabels": {
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "frontier": {
+            "properties": {
+                "showFrontierLine": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "frontierLineColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "shadeDominatedRegion": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "shadeOpacity": {
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "model": {
+                        "max": 1
+                    },
+                    "cost": {
+                        "max": 1
+                    },
+                    "score": {
+                        "max": 1
+                    },
+                    "releaseDate": {
+                        "max": 1
+                    }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "for": {
+                        "in": "model"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {}
+                    }
+                },
+                "values": {
+                    "select": [
+                        {
+                            "bind": {
+                                "to": "cost"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "score"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "releaseDate"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "privileges": []
+}

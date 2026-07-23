@@ -243,6 +243,27 @@ export class Visual implements IVisual {
 
         this.plotArea.attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
+        const palette = this.host.colorPalette;
+        const colors = palette.isHighContrast
+            ? {
+                axisStroke: palette.foreground.value,
+                dominatedRegionFill: palette.background.value,
+                frontierLine: palette.foreground.value,
+                onFrontierPoint: palette.foreground.value,
+                dominatedPoint: palette.foregroundNeutralSecondary.value,
+                pointStroke: palette.background.value,
+                label: palette.foreground.value
+            }
+            : {
+                axisStroke: "#d9d9d9",
+                dominatedRegionFill: "#666666",
+                frontierLine: settings.frontierCard.frontierLineColor.value.value,
+                onFrontierPoint: settings.dataPointCard.onFrontierColor.value.value,
+                dominatedPoint: settings.dataPointCard.dominatedColor.value.value,
+                pointStroke: "#ffffff",
+                label: "#333333"
+            };
+
         const costExtent = d3.extent(visiblePoints, d => d.cost) as [number, number];
         const scoreExtent = d3.extent(visiblePoints, d => d.score) as [number, number];
 
@@ -259,11 +280,13 @@ export class Visual implements IVisual {
         this.plotArea.append("g")
             .attr("class", "axis axis-x")
             .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).ticks(6));
+            .call(d3.axisBottom(xScale).ticks(6))
+            .call(g => g.selectAll("path, line").attr("stroke", colors.axisStroke));
 
         this.plotArea.append("g")
             .attr("class", "axis axis-y")
-            .call(d3.axisLeft(yScale).ticks(6));
+            .call(d3.axisLeft(yScale).ticks(6))
+            .call(g => g.selectAll("path, line").attr("stroke", colors.axisStroke));
 
         const frontierSorted = [...frontierPoints].sort((a, b) => a.cost - b.cost);
 
@@ -280,6 +303,7 @@ export class Visual implements IVisual {
                 .datum(extended)
                 .attr("class", "dominated-region")
                 .attr("d", areaGen)
+                .attr("fill", colors.dominatedRegionFill)
                 .attr("fill-opacity", (settings.frontierCard.shadeOpacity.value || 8) / 100);
         }
 
@@ -293,7 +317,7 @@ export class Visual implements IVisual {
                 .datum(frontierSorted)
                 .attr("class", "frontier-line")
                 .attr("d", lineGen)
-                .attr("stroke", settings.frontierCard.frontierLineColor.value.value)
+                .attr("stroke", colors.frontierLine)
                 .attr("fill", "none");
         }
 
@@ -328,9 +352,8 @@ export class Visual implements IVisual {
 
         pointGroups.append("circle")
             .attr("r", pointRadius)
-            .attr("fill", d => d.onFrontier
-                ? settings.dataPointCard.onFrontierColor.value.value
-                : settings.dataPointCard.dominatedColor.value.value)
+            .attr("fill", d => d.onFrontier ? colors.onFrontierPoint : colors.dominatedPoint)
+            .attr("stroke", colors.pointStroke)
             .on("mouseover", function (event: MouseEvent, d: FrontierPoint) {
                 self.showTooltip(event, d);
             })
@@ -342,6 +365,7 @@ export class Visual implements IVisual {
                 .attr("class", "model-label")
                 .attr("x", pointRadius + 4)
                 .attr("y", 4)
+                .attr("fill", colors.label)
                 .text(d => d.name);
         }
 

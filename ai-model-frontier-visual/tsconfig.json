@@ -11,7 +11,8 @@
         "lib": [
             "es2022",
             "dom"
-        ]
+        ],
+        "types": []
     },
     "files": [
         "./src/visual.ts"

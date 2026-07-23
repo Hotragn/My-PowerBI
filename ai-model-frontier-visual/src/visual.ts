@@ -31,6 +31,7 @@ export class Visual implements IVisual {
     private sliderContainer: HTMLDivElement;
     private slider: HTMLInputElement;
     private playButton: HTMLButtonElement;
+    private landingPageContainer: HTMLDivElement;
 
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
@@ -74,6 +75,47 @@ export class Visual implements IVisual {
         this.slider.value = "0";
         this.slider.addEventListener("input", () => this.render());
         this.sliderContainer.appendChild(this.slider);
+
+        this.landingPageContainer = document.createElement("div");
+        this.landingPageContainer.className = "frontier-landing-page";
+        this.landingPageContainer.appendChild(this.buildLandingPageContent());
+        this.target.appendChild(this.landingPageContainer);
+    }
+
+    private buildLandingPageContent(): DocumentFragment {
+        const fragment = document.createDocumentFragment();
+
+        const heading = document.createElement("h2");
+        heading.textContent = "AI Model Frontier";
+        fragment.appendChild(heading);
+
+        const intro = document.createElement("p");
+        intro.append(
+            "Add a ",
+            Visual.strong("Model"),
+            ", a ",
+            Visual.strong("Cost"),
+            " and a ",
+            Visual.strong("Capability score"),
+            " field to get started."
+        );
+        fragment.appendChild(intro);
+
+        const timelineHint = document.createElement("p");
+        timelineHint.append(
+            "Add a ",
+            Visual.strong("Release date"),
+            " field to unlock the timeline playback control."
+        );
+        fragment.appendChild(timelineHint);
+
+        return fragment;
+    }
+
+    private static strong(text: string): HTMLElement {
+        const element = document.createElement("strong");
+        element.textContent = text;
+        return element;
     }
 
     public update(options: VisualUpdateOptions) {
@@ -90,6 +132,15 @@ export class Visual implements IVisual {
             this.dates = Array.from(new Set(this.allPoints.filter(p => p.date).map(p => p.date.getTime())))
                 .sort((a, b) => a - b)
                 .map(t => new Date(t));
+
+            const showLandingPage = this.allPoints.length === 0;
+            this.landingPageContainer.style.display = showLandingPage ? "flex" : "none";
+            this.svg.style("display", showLandingPage ? "none" : "block");
+            if (showLandingPage) {
+                this.sliderContainer.style.display = "none";
+                this.events.renderingFinished(options);
+                return;
+            }
 
             const hasTimeline = this.dates.length > 1;
             this.sliderContainer.style.display = hasTimeline ? "flex" : "none";

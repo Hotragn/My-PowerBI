@@ -300,12 +300,31 @@ export class Visual implements IVisual {
         const pointRadius = settings.dataPointCard.pointRadius.value || 6;
         const self = this;
 
+        const selectPoint = (event: MouseEvent | KeyboardEvent, d: FrontierPoint) => {
+            self.selectionManager.select(d.selectionId, event.ctrlKey || event.metaKey);
+            event.stopPropagation();
+        };
+
         const pointGroups = this.plotArea.selectAll(".model-point")
             .data(visiblePoints)
             .enter()
             .append("g")
             .attr("class", "model-point")
-            .attr("transform", d => `translate(${xScale(d.cost)},${yScale(d.score)})`);
+            .attr("tabindex", 0)
+            .attr("role", "button")
+            .attr("aria-label", d => `${d.name}: ${d.onFrontier ? "on" : "not on"} the efficiency frontier`)
+            .attr("transform", d => `translate(${xScale(d.cost)},${yScale(d.score)})`)
+            .on("keydown", (event: KeyboardEvent, d: FrontierPoint) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    selectPoint(event, d);
+                    event.preventDefault();
+                }
+            })
+            .on("contextmenu", (event: MouseEvent, d: FrontierPoint) => {
+                self.selectionManager.showContextMenu(d.selectionId, { x: event.clientX, y: event.clientY });
+                event.preventDefault();
+                event.stopPropagation();
+            });
 
         pointGroups.append("circle")
             .attr("r", pointRadius)
@@ -316,10 +335,7 @@ export class Visual implements IVisual {
                 self.showTooltip(event, d);
             })
             .on("mouseout", () => this.tooltipService.hide({ immediately: true, isTouchEvent: false }))
-            .on("click", (event: MouseEvent, d: FrontierPoint) => {
-                self.selectionManager.select(d.selectionId, event.ctrlKey || event.metaKey);
-                event.stopPropagation();
-            });
+            .on("click", (event: MouseEvent, d: FrontierPoint) => selectPoint(event, d));
 
         if (settings.dataPointCard.showLabels.value) {
             pointGroups.append("text")

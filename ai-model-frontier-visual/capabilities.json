@@ -84,6 +84,7 @@
         }
     },
     "supportsLandingPage": true,
+    "supportsKeyboardFocus": true,
     "dataViewMappings": [
         {
             "conditions": [

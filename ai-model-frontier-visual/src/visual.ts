@@ -11,6 +11,7 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ITooltipService = powerbi.extensibility.ITooltipService;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import DataView = powerbi.DataView;
 
@@ -24,6 +25,7 @@ export class Visual implements IVisual {
     private host: IVisualHost;
     private selectionManager: ISelectionManager;
     private tooltipService: ITooltipService;
+    private localizationManager: ILocalizationManager;
 
     private target: HTMLElement;
     private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
@@ -46,6 +48,7 @@ export class Visual implements IVisual {
         this.host = options.host;
         this.selectionManager = options.host.createSelectionManager();
         this.tooltipService = options.host.tooltipService;
+        this.localizationManager = options.host.createLocalizationManager();
         this.formattingSettingsService = new FormattingSettingsService();
         this.target = options.element;
 
@@ -86,36 +89,18 @@ export class Visual implements IVisual {
         const fragment = document.createDocumentFragment();
 
         const heading = document.createElement("h2");
-        heading.textContent = "AI Model Frontier";
+        heading.textContent = this.localizationManager.getDisplayName("Visual_LandingPage_Title");
         fragment.appendChild(heading);
 
         const intro = document.createElement("p");
-        intro.append(
-            "Add a ",
-            Visual.strong("Model"),
-            ", a ",
-            Visual.strong("Cost"),
-            " and a ",
-            Visual.strong("Capability score"),
-            " field to get started."
-        );
+        intro.textContent = this.localizationManager.getDisplayName("Visual_LandingPage_Intro");
         fragment.appendChild(intro);
 
         const timelineHint = document.createElement("p");
-        timelineHint.append(
-            "Add a ",
-            Visual.strong("Release date"),
-            " field to unlock the timeline playback control."
-        );
+        timelineHint.textContent = this.localizationManager.getDisplayName("Visual_LandingPage_Timeline");
         fragment.appendChild(timelineHint);
 
         return fragment;
-    }
-
-    private static strong(text: string): HTMLElement {
-        const element = document.createElement("strong");
-        element.textContent = text;
-        return element;
     }
 
     public update(options: VisualUpdateOptions) {
@@ -373,16 +358,18 @@ export class Visual implements IVisual {
     }
 
     private showTooltip(event: MouseEvent, d: FrontierPoint): void {
+        const t = (key: string) => this.localizationManager.getDisplayName(key);
+
         this.tooltipService.show({
             coordinates: [event.clientX, event.clientY],
             isTouchEvent: false,
             identities: [d.selectionId],
             dataItems: [
-                { displayName: "Model", value: d.name },
-                { displayName: "Cost", value: String(d.cost) },
-                { displayName: "Capability score", value: String(d.score) },
-                { displayName: "On efficiency frontier", value: d.onFrontier ? "Yes" : "No" },
-                ...(d.date ? [{ displayName: "Release date", value: d.date.toLocaleDateString() }] : [])
+                { displayName: t("Visual_Tooltip_Model"), value: d.name },
+                { displayName: t("Visual_Tooltip_Cost"), value: String(d.cost) },
+                { displayName: t("Visual_Tooltip_Score"), value: String(d.score) },
+                { displayName: t("Visual_Tooltip_OnFrontier"), value: d.onFrontier ? t("Visual_Common_Yes") : t("Visual_Common_No") },
+                ...(d.date ? [{ displayName: t("Visual_Tooltip_ReleaseDate"), value: d.date.toLocaleDateString() }] : [])
             ]
         });
     }

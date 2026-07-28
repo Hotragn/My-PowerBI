@@ -168,6 +168,8 @@ export class Visual implements IVisual {
             }
             const rawDate = dateColumn ? dateColumn.values[i] : null;
             const date = rawDate ? new Date(rawDate as any) : null;
+            const highlights = costColumn?.highlights ?? scoreColumn?.highlights;
+            const highlighted = highlights ? highlights[i] !== null && highlights[i] !== undefined : undefined;
 
             points.push({
                 name: String(categories.values[i]),
@@ -175,6 +177,7 @@ export class Visual implements IVisual {
                 score,
                 date: date && !isNaN(date.getTime()) ? date : null,
                 onFrontier: false,
+                highlighted,
                 selectionId: this.host.createSelectionIdBuilder()
                     .withCategory(categories, i)
                     .createSelectionId()
@@ -344,6 +347,7 @@ export class Visual implements IVisual {
             .attr("r", pointRadius)
             .attr("fill", d => d.onFrontier ? colors.onFrontierPoint : colors.dominatedPoint)
             .attr("stroke", colors.pointStroke)
+            .style("opacity", d => d.highlighted === false ? 0.25 : 1)
             .on("mouseover", function (event: MouseEvent, d: FrontierPoint) {
                 self.showTooltip(event, d);
             })
@@ -362,6 +366,7 @@ export class Visual implements IVisual {
                 .attr("x", pointRadius + 4)
                 .attr("y", 4)
                 .attr("fill", colors.label)
+                .style("opacity", d => d.highlighted === false ? 0.25 : 1)
                 .text(d => d.name);
         }
 

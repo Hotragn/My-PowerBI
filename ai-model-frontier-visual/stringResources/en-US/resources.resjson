@@ -1,0 +1,12 @@
+{
+    "Visual_LandingPage_Title": "AI Model Frontier",
+    "Visual_LandingPage_Intro": "Add a Model, a Cost and a Capability score field to get started.",
+    "Visual_LandingPage_Timeline": "Add a Release date field to unlock the timeline playback control.",
+    "Visual_Tooltip_Model": "Model",
+    "Visual_Tooltip_Cost": "Cost",
+    "Visual_Tooltip_Score": "Capability score",
+    "Visual_Tooltip_OnFrontier": "On efficiency frontier",
+    "Visual_Tooltip_ReleaseDate": "Release date",
+    "Visual_Common_Yes": "Yes",
+    "Visual_Common_No": "No"
+}

@@ -308,6 +308,7 @@ export class Visual implements IVisual {
 
         const pointRadius = settings.dataPointCard.pointRadius.value || 6;
         const self = this;
+        const interactionsAllowed = this.host.hostCapabilities.allowInteractions !== false;
 
         const selectPoint = (event: MouseEvent | KeyboardEvent, d: FrontierPoint) => {
             self.selectionManager.select(d.selectionId, event.ctrlKey || event.metaKey);
@@ -319,31 +320,41 @@ export class Visual implements IVisual {
             .enter()
             .append("g")
             .attr("class", "model-point")
-            .attr("tabindex", 0)
-            .attr("role", "button")
-            .attr("aria-label", d => `${d.name}: ${d.onFrontier ? "on" : "not on"} the efficiency frontier`)
-            .attr("transform", d => `translate(${xScale(d.cost)},${yScale(d.score)})`)
-            .on("keydown", (event: KeyboardEvent, d: FrontierPoint) => {
-                if (event.key === "Enter" || event.key === " ") {
-                    selectPoint(event, d);
-                    event.preventDefault();
-                }
-            })
-            .on("contextmenu", (event: MouseEvent, d: FrontierPoint) => {
-                self.selectionManager.showContextMenu(d.selectionId, { x: event.clientX, y: event.clientY });
-                event.preventDefault();
-                event.stopPropagation();
-            });
+            .attr("transform", d => `translate(${xScale(d.cost)},${yScale(d.score)})`);
 
-        pointGroups.append("circle")
+        if (interactionsAllowed) {
+            pointGroups
+                .attr("tabindex", 0)
+                .attr("role", "button")
+                .attr("aria-label", d => `${d.name}: ${d.onFrontier ? "on" : "not on"} the efficiency frontier`)
+                .on("keydown", (event: KeyboardEvent, d: FrontierPoint) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        selectPoint(event, d);
+                        event.preventDefault();
+                    }
+                })
+                .on("contextmenu", (event: MouseEvent, d: FrontierPoint) => {
+                    self.selectionManager.showContextMenu(d.selectionId, { x: event.clientX, y: event.clientY });
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+        }
+
+        const circles = pointGroups.append("circle")
             .attr("r", pointRadius)
             .attr("fill", d => d.onFrontier ? colors.onFrontierPoint : colors.dominatedPoint)
             .attr("stroke", colors.pointStroke)
             .on("mouseover", function (event: MouseEvent, d: FrontierPoint) {
                 self.showTooltip(event, d);
             })
-            .on("mouseout", () => this.tooltipService.hide({ immediately: true, isTouchEvent: false }))
-            .on("click", (event: MouseEvent, d: FrontierPoint) => selectPoint(event, d));
+            .on("mouseout", () => this.tooltipService.hide({ immediately: true, isTouchEvent: false }));
+
+        if (interactionsAllowed) {
+            circles.on("click", (event: MouseEvent, d: FrontierPoint) => selectPoint(event, d));
+            pointGroups.style("cursor", "pointer");
+        } else {
+            pointGroups.style("cursor", "default");
+        }
 
         if (settings.dataPointCard.showLabels.value) {
             pointGroups.append("text")
@@ -354,7 +365,9 @@ export class Visual implements IVisual {
                 .text(d => d.name);
         }
 
-        this.svg.on("click", () => this.selectionManager.clear());
+        if (interactionsAllowed) {
+            this.svg.on("click", () => this.selectionManager.clear());
+        }
     }
 
     private showTooltip(event: MouseEvent, d: FrontierPoint): void {

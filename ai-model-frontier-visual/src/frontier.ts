@@ -7,6 +7,8 @@ export interface FrontierPoint {
     date: Date | null;
     onFrontier: boolean;
     selectionId: any;
+    /** undefined when no cross-visual highlight is active; otherwise whether this point is part of it */
+    highlighted?: boolean;
 }
 
 /**

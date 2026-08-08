@@ -87,8 +87,6 @@
     "supportsKeyboardFocus": true,
     "supportsHighlight": true,
     "supportsMultiVisualSelection": true,
-    "supportsAnalytics": true,
-    "supportsExport": true,
     "tooltips": {},
     "dataViewMappings": [
         {
